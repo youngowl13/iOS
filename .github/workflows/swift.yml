@@ -15,6 +15,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build
       run: carthage update --use-xcframeworks --platform iOS --cache-builds
-           xcodebuild clean build  -scheme MyScheme \
-                        -project Nextcloud.xcodeproj \
-                        -destination "platform=iOS"
+    - name: Build
+      run: swift build -v
+    - name: Run tests
+      run: swift test -v                  

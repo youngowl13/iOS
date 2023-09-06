@@ -34,15 +34,15 @@ jobs:
 
       - name: Copy Project Directory
         run: |
-          cp -r /home/runner/work/cybernews_test_dependency/cybernews_test_dependency /tmp/cybernews_test_dependency
-          rm -rf /tmp/cybernews_test_dependency/dependency-check
-          rm -f /tmp/cybernews_test_dependency/dependency-check.zip
+          cp -r /home/runner/work/iOS/iOS /tmp/iOS
+          rm -rf /tmp/iOS/dependency-check
+          rm -f /tmp/iOS/dependency-check.zip
 
       
       - name: Run Dependency-Check
         run: |
           cd dependency-check/bin
-          bash dependency-check.sh --scan /tmp/cybernews_test_dependency --format HTML --out reports --enableRetired --enableExperimental --project "property.analyzer.python.enabled=true" 
+          bash dependency-check.sh --scan /tmp/iOS --format HTML --out reports --enableRetired --enableExperimental --project “property.analyzer.ios.enabled=true"
 
       - name: List files in reports directory also add the logo with heading
         run: |

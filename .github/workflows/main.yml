@@ -30,7 +30,7 @@ jobs:
           unzip dependency-check.zip
           ls -la
           pwd
-          cd 
+
 
       - name: Copy Project Directory
         run: |
@@ -42,7 +42,7 @@ jobs:
       - name: Run Dependency-Check
         run: |
           cd dependency-check/bin
-          bash dependency-check.sh --scan /tmp/iOS --format HTML --out reports --enableRetired --enableExperimental --project “property.analyzer.ios.enabled=true"
+          bash dependency-check.sh --scan /tmp/iOS --format HTML --out reports --enableRetired --enableExperimental --project "property.analyzer.ios.enabled=true"
 
       - name: List files in reports directory also add the logo with heading
         run: |

@@ -1,0 +1,62 @@
+on: [push]
+
+
+jobs:
+  depchecktest:
+    runs-on: ubuntu-latest
+    name: Dependency Check Test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Install Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          java-package: 'jdk'
+          distribution: 'adopt'
+          architecture: 'x64'
+          check-latest: false
+          server-id: 'github'
+          server-username: ${{ github.actor }}
+          server-password: ${{ secrets.GITHUB_TOKEN }}
+          overwrite-settings: true
+          job-status: 'success'
+      
+      - name: Download OWASP Dependency-Check
+        run: |
+          VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt)
+          curl -Ls "https://github.com/jeremylong/DependencyCheck/releases/download/v$VERSION/dependency-check-$VERSION-release.zip" --output dependency-check.zip
+          unzip dependency-check.zip
+          ls -la
+          pwd
+          cd 
+
+      - name: Copy Project Directory
+        run: |
+          cp -r /home/runner/work/cybernews_test_dependency/cybernews_test_dependency /tmp/cybernews_test_dependency
+          rm -rf /tmp/cybernews_test_dependency/dependency-check
+          rm -f /tmp/cybernews_test_dependency/dependency-check.zip
+
+      
+      - name: Run Dependency-Check
+        run: |
+          cd dependency-check/bin
+          bash dependency-check.sh --scan /tmp/cybernews_test_dependency --format HTML --out reports --enableRetired --enableExperimental --project "property.analyzer.python.enabled=true" 
+
+      - name: List files in reports directory also add the logo with heading
+        run: |
+          ls -la dependency-check/bin/reports
+          cd dependency-check/bin/reports
+          chmod 777 dependency-check-report.html
+          sed '/<svg/,/<\/svg>/d' dependency-check-report.html > temp.html && mv temp.html dependency-check-report.html
+          { echo '<div style="text-align:center"><img src="https://storage.googleapis.com/tm-assets/images/dark/teachmint-logo-dark.svg" width="200" height="50" /></div>'; cat dependency-check-report.html; } > tmp_report_html.html && mv tmp_report_html.html dependency-check-report.html
+          sed 's|<h2 class="">Project:&nbsp;property\.analyzer\.python\.enabled=true</h2>|<h2 class="">Dependency Vulnerability Analysis</h2>|' dependency-check-report.html > temp.html && mv temp.html dependency-check-report.html
+
+
+      - name: Upload Test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Dependency-Check Report
+          path: dependency-check/bin/reports
+          
